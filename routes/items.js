@@ -1,4 +1,3 @@
-// backend/routes/items.js
 const express = require('express');
 const { Op } = require('sequelize');
 const { Item, User, Category } = require('../db/models');
@@ -85,6 +84,67 @@ router.post('/', requireAuth, async (req, res, next) => {
     next(err);
   }
 });
+
+// PUT /api/items/:id  — owner-only
+router.put('/:id', requireAuth, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const item = await Item.findByPk(id);
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+
+    // ownership check
+    if (item.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden: not your item' });
+    }
+
+    const { name, description, categoryId, price, quantity, imageUrl } = req.body;
+    if (name !== undefined && !name) {
+      return res.status(400).json({ message: 'name cannot be empty' });
+    }
+    if (price !== undefined && price === null) {
+      return res.status(400).json({ message: 'price cannot be null' });
+    }
+
+    await item.update({
+      name: name ?? item.name,
+      description: description ?? item.description,
+      categoryId: categoryId ?? item.categoryId,
+      price: price ?? item.price,
+      quantity: quantity ?? item.quantity,
+      imageUrl: imageUrl ?? item.imageUrl
+    });
+
+    const updated = await Item.findByPk(id, {
+      include: [
+        { model: User, as: 'owner', attributes: ['id', 'username'] },
+        { model: Category, attributes: ['id', 'name'] }
+      ]
+    });
+
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/items/:id — owner-only
+router.delete('/:id', requireAuth, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const item = await Item.findByPk(id);
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+
+    if (item.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden: not your item' });
+    }
+
+    await item.destroy();
+    res.json({ message: 'Deleted' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 
 module.exports = router;
