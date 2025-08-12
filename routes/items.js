@@ -5,7 +5,6 @@ const { Item, User, Category } = require('../db/models');
 
 const router = express.Router();
 
-// GET /api/items?q=&categoryId=&minPrice=&maxPrice=&page=&size=
 router.get('/', async (req, res, next) => {
   try {
     const { q, categoryId, minPrice, maxPrice, page = 1, size = 20 } = req.query;

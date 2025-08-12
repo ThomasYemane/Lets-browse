@@ -10,33 +10,39 @@ const cookieParser = require('cookie-parser');
 const { environment } = require('./config');
 const isProduction = environment === 'production';
 
+const { restoreUser } = require('./utils/auth');
+const routes = require('./routes'); // <-- require routes once, at top
+
 const app = express();
 
+// Basic middleware
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.json());
 
-// Security Middleware
+// Security middleware
 if (!isProduction) {
   app.use(cors());
 }
 app.use(
   helmet.crossOriginResourcePolicy({
-    policy: "cross-origin"
+    policy: 'cross-origin'
   })
 );
 app.use(
   csurf({
     cookie: {
       secure: isProduction,
-      sameSite: isProduction && "Lax",
+      sameSite: isProduction && 'Lax',
       httpOnly: true
     }
   })
 );
 
-// Routes
-const routes = require('./routes');
+// Auth restoration (needs cookies parsed)
+app.use(restoreUser);
+
+// Routes (mount once, after middleware)
 app.use(routes);
 
 module.exports = app;

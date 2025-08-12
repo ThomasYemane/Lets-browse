@@ -1,10 +1,5 @@
-// backend/routes/index.js
 const express = require('express');
 const router = express.Router();
-
-router.use('/api/items', require('./items'));
-router.use('/api/categories', require('./categories'));
-
 
 router.get('/hello/world', (req, res) => {
   res.cookie('XSRF-TOKEN', req.csrfToken());
@@ -17,7 +12,15 @@ router.get('/api/csrf/restore', (req, res) => {
   res.status(200).json({ 'XSRF-Token': csrfToken });
 });
 
-// 👉 mount items routes here
+// existing
 router.use('/api/items', require('./items'));
+router.use('/api/categories', require('./categories'));
+
+// new
+router.use('/api/session', require('./session'));
+router.use('/api/users', require('./users'));
+
+router.use('/api/users', require('./users'));
+
 
 module.exports = router;
