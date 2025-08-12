@@ -3,10 +3,10 @@ const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
 const { User } = require('../db/models');
 const { setTokenCookie, restoreUser } = require('../utils/auth');
-
 const router = express.Router();
 
-// POST /api/session  (login)
+
+// Login
 router.post('/', async (req, res, next) => {
   try {
     const { credential, password } = req.body; // username or email
@@ -23,6 +23,12 @@ router.post('/', async (req, res, next) => {
     setTokenCookie(res, user);
     res.json({ user: { id: user.id, username: user.username, email: user.email } });
   } catch (e) { next(e); }
+});
+
+// Logout
+router.delete('/', (_req, res) => {
+  res.clearCookie('token');
+  return res.json({ message: 'success' });
 });
 
 // GET /api/session  (restore)

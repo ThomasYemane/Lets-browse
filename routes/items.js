@@ -2,6 +2,8 @@
 const express = require('express');
 const { Op } = require('sequelize');
 const { Item, User, Category } = require('../db/models');
+const { requireAuth } = require('../utils/auth');
+
 
 const router = express.Router();
 
@@ -50,5 +52,39 @@ router.get('/:id', async (req, res, next) => {
     next(err);
   }
 });
+
+// requires login
+router.post('/', requireAuth, async (req, res, next) => {
+  try {
+    const { name, description, categoryId, price, quantity, imageUrl } = req.body;
+
+    if (!name || price == null) {
+      return res.status(400).json({ message: 'name and price are required' });
+    }
+
+    const item = await Item.create({
+      ownerId: req.user.id,                // from JWT
+      categoryId: categoryId || null,
+      name,
+      description: description || '',
+      price,
+      quantity: quantity ?? 0,
+      imageUrl: imageUrl || null
+    });
+
+    // return with relations populated
+    const created = await Item.findByPk(item.id, {
+      include: [
+        { model: User, as: 'owner', attributes: ['id', 'username'] },
+        { model: Category, attributes: ['id', 'name'] }
+      ]
+    });
+
+    res.status(201).json(created);
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 module.exports = router;
