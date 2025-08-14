@@ -1,28 +1,38 @@
-// backend/routes/api/session.js
 const express = require('express');
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
+
 const { setTokenCookie } = require('../../utils/auth');
 const { User } = require('../../db/models');
 
+const { check } = require('express-validator');
+const { handleValidationErrors } = require('../../utils/validation');
+
 const router = express.Router();
 
-/**
- * POST /api/session
- * Log in with username OR email + password
- */
-router.post('/', async (req, res, next) => {
+/* ===== validation ===== */
+const validateLogin = [
+  check('credential')
+    .exists({ checkFalsy: true })
+    .notEmpty()
+    .withMessage('Please provide a valid email or username.'),
+  check('password')
+    .exists({ checkFalsy: true })
+    .withMessage('Please provide a password.'),
+  handleValidationErrors
+];
+
+/* ===== POST /api/session — login ===== */
+router.post('/', validateLogin, async (req, res, next) => {
   try {
     const { credential, password } = req.body;
 
-    // Find by username OR email (need unscoped to read hashedPassword)
     const user = await User.unscoped().findOne({
       where: {
         [Op.or]: [{ username: credential }, { email: credential }]
       }
     });
 
-    // Invalid user or bad password
     if (!user || !bcrypt.compareSync(password, user.hashedPassword.toString())) {
       const err = new Error('Login failed');
       err.status = 401;
@@ -31,11 +41,10 @@ router.post('/', async (req, res, next) => {
       throw err;
     }
 
-    // Issue token cookie
     await setTokenCookie(res, {
       id: user.id,
       email: user.email,
-      username: user.username,
+      username: user.username
     });
 
     return res.json({
@@ -46,22 +55,16 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-/**
- * GET /api/session
- * Return current session user (or null)
- */
+/* ===== GET /api/session — current user ===== */
 router.get('/', (req, res) => {
-  const { user } = req; // set by restoreUser in api/index.js
+  const { user } = req;
   if (!user) return res.json({ user: null });
   return res.json({
     user: { id: user.id, email: user.email, username: user.username }
   });
 });
 
-/**
- * DELETE /api/session
- * Log out (clear token cookie)
- */
+/* ===== DELETE /api/session — logout ===== */
 router.delete('/', (_req, res) => {
   res.clearCookie('token');
   return res.json({ message: 'success' });
