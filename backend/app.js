@@ -1,4 +1,3 @@
-// backend/app.js
 const express = require('express');
 require('express-async-errors');
 const morgan = require('morgan');
@@ -25,17 +24,21 @@ if (!isProduction) app.use(cors());
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 app.use(
   csurf({
-    cookie: { secure: isProduction, sameSite: isProduction && 'Lax', httpOnly: true }
+    cookie: {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'Lax'     // <- use Lax in both dev & prod so localhost:5173 works
+    }
   })
 );
 
-// Auth restoration (needs cookies parsed)
+// Restore auth before routes
 app.use(restoreUser);
 
-// Routes (mount once, after middleware)
+// Routes
 app.use(routes);
 
-// ⛔️ 1) Resource Not Found
+// 404
 app.use((_req, _res, next) => {
   const err = new Error("The requested resource couldn't be found.");
   err.title = 'Resource Not Found';
@@ -44,7 +47,15 @@ app.use((_req, _res, next) => {
   next(err);
 });
 
-// 🧰 2) Sequelize Validation Error shaping
+// CSRF explicit handler (before final formatter)
+app.use((err, _req, res, next) => {
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({ title: 'Server Error', message: 'invalid csrf token' });
+  }
+  next(err);
+});
+
+// Sequelize validation shaping
 const { ValidationError } = require('sequelize');
 app.use((err, _req, _res, next) => {
   if (err instanceof ValidationError) {
@@ -56,7 +67,7 @@ app.use((err, _req, _res, next) => {
   next(err);
 });
 
-// 🧾 3) Final Error Formatter
+// Final error formatter
 app.use((err, _req, res, _next) => {
   res.status(err.status || 500);
   console.error(err);
