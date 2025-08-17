@@ -1,25 +1,28 @@
-// frontend/src/main.jsx
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
 import { Provider } from 'react-redux';
-import store from './store';
+import store from './store';   // <-- correct import
+import { Modal, ModalProvider } from './context/Modal';
 import { restoreCSRF, csrfFetch } from './store/csrf';
 import * as sessionActions from './store/session';
 
 if (import.meta.env.MODE !== 'production') {
-  restoreCSRF();                 // sets XSRF cookie in dev
-  window.csrfFetch = csrfFetch;  // handy for manual testing
+  restoreCSRF();
+
+  window.csrfFetch = csrfFetch;
   window.store = store;
   window.sessionActions = sessionActions;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
-)
+    <ModalProvider>
+      <Provider store={store}>
+        <App />
+        <Modal />
+      </Provider>
+    </ModalProvider>
+  </React.StrictMode>
+);
