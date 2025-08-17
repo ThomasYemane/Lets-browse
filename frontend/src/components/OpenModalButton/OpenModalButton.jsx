@@ -1,18 +1,19 @@
-import { useModal } from '../../context/Modal'
+// frontend/src/components/OpenModalButton/OpenModalButton.jsx
+import { useModal } from '../../context/Modal';
 
 export default function OpenModalButton({
-  modalComponent,
-  buttonText,
-  onButtonClick,
-  onModalClose
+  modalComponent,   // component to render in the modal
+  buttonText,       // text on the button
+  onButtonClick,    // optional: runs when the button is clicked
+  onModalClose      // optional: runs when the modal is closed
 }) {
-  const { setModalContent, setOnModalClose } = useModal()
+  const { setModalContent, setOnModalClose } = useModal();
 
-  const onClick = () => {
-    if (onModalClose) setOnModalClose(onModalClose)
-    setModalContent(modalComponent)
-    if (typeof onButtonClick === 'function') onButtonClick()
-  }
+  const handleClick = () => {
+    if (typeof onModalClose === 'function') setOnModalClose(onModalClose);
+    setModalContent(modalComponent);
+    if (typeof onButtonClick === 'function') onButtonClick();
+  };
 
-  return <button onClick={onClick}>{buttonText}</button>
+  return <button onClick={handleClick}>{buttonText}</button>;
 }

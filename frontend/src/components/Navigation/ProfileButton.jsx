@@ -2,15 +2,19 @@ import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { FaUserCircle } from 'react-icons/fa';
 import * as sessionActions from '../../store/session';
+import OpenModalButton from '../OpenModalButton/OpenModalButton';
+import LoginFormModal from '../LoginFormModal/LoginFormModal';
+import SignupFormModal from '../SignupFormModal/SignupFormModal';
 
-export default function ProfileButton({ user }) {
+
+function ProfileButton({ user }) {
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
 
   const toggleMenu = (e) => {
-    e.stopPropagation();      // prevent document click from immediately closing
-    setShowMenu((s) => !s);
+    e.stopPropagation();
+    setShowMenu(!showMenu);
   };
 
   useEffect(() => {
@@ -26,24 +30,51 @@ export default function ProfileButton({ user }) {
     return () => document.removeEventListener('click', closeMenu);
   }, [showMenu]);
 
-  const logout = async (e) => {
+  const closeMenu = () => setShowMenu(false);
+
+  const logout = (e) => {
     e.preventDefault();
-    await dispatch(sessionActions.logout());
+    dispatch(sessionActions.logout());
+    closeMenu();
   };
 
   const ulClassName = 'profile-dropdown' + (showMenu ? '' : ' hidden');
 
   return (
-    <div className="profile">
-      <button className="profile-btn" onClick={toggleMenu}>
+    <>
+      <button onClick={toggleMenu}>
         <FaUserCircle />
       </button>
+
       <ul className={ulClassName} ref={ulRef}>
-        <li>{user.username}</li>
-        <li>{user.firstName} {user.lastName}</li>
-        <li>{user.email}</li>
-        <li><button onClick={logout}>Log Out</button></li>
+        {user ? (
+          <>
+            <li>{user.username}</li>
+            <li>{user.firstName} {user.lastName}</li>
+            <li>{user.email}</li>
+            <li><button onClick={logout}>Log Out</button></li>
+          </>
+        ) : (
+          <>
+            <li>
+              <OpenModalButton
+                buttonText="Log In"
+                modalComponent={<LoginFormModal />}
+                onButtonClick={closeMenu}
+              />
+            </li>
+            <li>
+              <OpenModalButton
+                buttonText="Sign Up"
+                modalComponent={<SignupFormModal />}
+                onButtonClick={closeMenu}
+              />
+            </li>
+          </>
+        )}
       </ul>
-    </div>
+    </>
   );
 }
+
+export default ProfileButton;

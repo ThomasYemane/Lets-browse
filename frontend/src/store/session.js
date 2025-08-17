@@ -38,11 +38,11 @@ export const restoreUser = () => async (dispatch) => {
   return res;
 };
 
-// SIGNUP thunk
+/** POST /api/users (signup) */
 export const signup = (user) => async (dispatch) => {
   const { username, firstName, lastName, email, password } = user;
-  const res = await csrfFetch("/api/users", {
-    method: "POST",
+  const res = await csrfFetch('/api/users', {
+    method: 'POST',
     body: JSON.stringify({ username, firstName, lastName, email, password })
   });
   const data = await res.json();
@@ -50,14 +50,11 @@ export const signup = (user) => async (dispatch) => {
   return res;
 };
 
-// ... your SET_USER / REMOVE_USER / setUser / removeUser / login / signup thunks above
-
+/** DELETE /api/session (logout) */
 export const logout = () => async (dispatch) => {
   const res = await csrfFetch('/api/session', { method: 'DELETE' });
-  dispatch({ type: 'session/removeUser' }); // or dispatch(removeUser()) if you exported it
+  dispatch(removeUser()); // <-- use the slice action
   return res;
 };
-
-
 
 export default sessionSlice.reducer;
