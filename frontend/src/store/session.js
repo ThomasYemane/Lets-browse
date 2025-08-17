@@ -50,5 +50,14 @@ export const signup = (user) => async (dispatch) => {
   return res;
 };
 
+// ... your SET_USER / REMOVE_USER / setUser / removeUser / login / signup thunks above
+
+export const logout = () => async (dispatch) => {
+  const res = await csrfFetch('/api/session', { method: 'DELETE' });
+  dispatch({ type: 'session/removeUser' }); // or dispatch(removeUser()) if you exported it
+  return res;
+};
+
+
 
 export default sessionSlice.reducer;
