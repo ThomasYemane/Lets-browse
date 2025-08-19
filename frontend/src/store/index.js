@@ -1,11 +1,15 @@
 // frontend/src/store/index.js
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import sessionReducer from './session';
+import productsReducer from './products';
+import categoriesReducer from './categories';
 
-const store = configureStore({
-  reducer: {
-    session: sessionReducer
-  }
+const rootReducer = combineReducers({
+   session: sessionReducer,
+   products: productsReducer,
+   categories : categoriesReducer,
 });
+
+const store = configureStore({ reducer: rootReducer });
 
 export default store;

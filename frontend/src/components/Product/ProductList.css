@@ -1,0 +1,46 @@
+.prodColumn {
+    flex: 0 1 calc(33.333% - 20px);
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prodContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.prodColumn > div > img {
+    object-fit: cover;
+    width: 100%;
+    height: 40vh;
+}
+
+.prodText {
+    color: #e60023;
+}
+
+.prodName {
+  float: left;
+}
+
+.h1{
+    font-family:Helvetica Neue, Helvetica, sans-serif;
+}
+
+.prodImage {
+  width: 100%;
+  height: 40vh;        
+  object-fit: cover;   
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;      
+}
