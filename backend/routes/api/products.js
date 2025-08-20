@@ -1,11 +1,11 @@
 const express = require('express');
 const { Op } = require('sequelize');
-const { Item, User, Category } = require('../db/models');
-const { requireAuth } = require('../utils/auth');
-
+const { Product, User, Category } = require('../../db/models');
+const { requireAuth } = require('../../utils/auth');
 
 const router = express.Router();
 
+// GET /api/products
 router.get('/', async (req, res, next) => {
   try {
     const { q, categoryId, minPrice, maxPrice, page = 1, size = 20 } = req.query;
@@ -20,7 +20,7 @@ router.get('/', async (req, res, next) => {
     const limit = Math.max(1, Math.min(Number(size) || 20, 100));
     const offset = (Math.max(1, Number(page) || 1) - 1) * limit;
 
-    const items = await Item.findAll({
+    const products = await Product.findAll({
       where,
       include: [
         { model: User, as: 'owner', attributes: ['id', 'username'] },
@@ -31,28 +31,29 @@ router.get('/', async (req, res, next) => {
       offset
     });
 
-    res.json({ items, page: Number(page) || 1, size: limit });
+    res.json({ products, page: Number(page) || 1, size: limit });
   } catch (err) {
     next(err);
   }
 });
 
+// GET /api/products/:id
 router.get('/:id', async (req, res, next) => {
   try {
-    const item = await Item.findByPk(req.params.id, {
+    const product = await Product.findByPk(req.params.id, {
       include: [
         { model: User, as: 'owner', attributes: ['id', 'username'] },
         { model: Category, attributes: ['id', 'name'] }
       ]
     });
-    if (!item) return res.status(404).json({ message: 'Item not found' });
-    res.json(item);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.json(product);
   } catch (err) {
     next(err);
   }
 });
 
-// requires login
+// POST /api/products (requires login)
 router.post('/', requireAuth, async (req, res, next) => {
   try {
     const { name, description, categoryId, price, quantity, imageUrl } = req.body;
@@ -61,8 +62,8 @@ router.post('/', requireAuth, async (req, res, next) => {
       return res.status(400).json({ message: 'name and price are required' });
     }
 
-    const item = await Item.create({
-      ownerId: req.user.id,                // from JWT
+    const product = await Product.create({
+      ownerId: req.user.id,                // from auth middleware
       categoryId: categoryId || null,
       name,
       description: description || '',
@@ -71,8 +72,7 @@ router.post('/', requireAuth, async (req, res, next) => {
       imageUrl: imageUrl || null
     });
 
-    // return with relations populated
-    const created = await Item.findByPk(item.id, {
+    const created = await Product.findByPk(product.id, {
       include: [
         { model: User, as: 'owner', attributes: ['id', 'username'] },
         { model: Category, attributes: ['id', 'name'] }
@@ -85,16 +85,15 @@ router.post('/', requireAuth, async (req, res, next) => {
   }
 });
 
-// PUT /api/items/:id  — owner-only
+// PUT /api/products/:id (owner-only)
 router.put('/:id', requireAuth, async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const item = await Item.findByPk(id);
-    if (!item) return res.status(404).json({ message: 'Item not found' });
+    const product = await Product.findByPk(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    // ownership check
-    if (item.ownerId !== req.user.id) {
-      return res.status(403).json({ message: 'Forbidden: not your item' });
+    if (product.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden: not your product' });
     }
 
     const { name, description, categoryId, price, quantity, imageUrl } = req.body;
@@ -105,16 +104,16 @@ router.put('/:id', requireAuth, async (req, res, next) => {
       return res.status(400).json({ message: 'price cannot be null' });
     }
 
-    await item.update({
-      name: name ?? item.name,
-      description: description ?? item.description,
-      categoryId: categoryId ?? item.categoryId,
-      price: price ?? item.price,
-      quantity: quantity ?? item.quantity,
-      imageUrl: imageUrl ?? item.imageUrl
+    await product.update({
+      name: name ?? product.name,
+      description: description ?? product.description,
+      categoryId: categoryId ?? product.categoryId,
+      price: price ?? product.price,
+      quantity: quantity ?? product.quantity,
+      imageUrl: imageUrl ?? product.imageUrl
     });
 
-    const updated = await Item.findByPk(id, {
+    const updated = await Product.findByPk(id, {
       include: [
         { model: User, as: 'owner', attributes: ['id', 'username'] },
         { model: Category, attributes: ['id', 'name'] }
@@ -127,24 +126,22 @@ router.put('/:id', requireAuth, async (req, res, next) => {
   }
 });
 
-// DELETE /api/items/:id — owner-only
+// DELETE /api/products/:id (owner-only)
 router.delete('/:id', requireAuth, async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const item = await Item.findByPk(id);
-    if (!item) return res.status(404).json({ message: 'Item not found' });
+    const product = await Product.findByPk(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    if (item.ownerId !== req.user.id) {
-      return res.status(403).json({ message: 'Forbidden: not your item' });
+    if (product.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden: not your product' });
     }
 
-    await item.destroy();
+    await product.destroy();
     res.json({ message: 'Deleted' });
   } catch (err) {
     next(err);
   }
 });
-
-
 
 module.exports = router;

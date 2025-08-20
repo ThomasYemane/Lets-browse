@@ -1,5 +1,5 @@
 const express = require('express');
-const { Category } = require('../db/models');
+const { Category } = require('../../db/models');
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {

@@ -1,35 +1,17 @@
 'use strict';
 
+const bcrypt = require('bcryptjs');
+
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.bulkInsert('Users', [
       {
-        username: 'alice',
-        email: 'alice@example.com',
-        hashedPassword: 'demo-hash', // placeholder for demo
-        firstName: 'Alice',
-        lastName: 'A.',
-        address: '123 Apple St',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        username: 'bob',
-        email: 'bob@example.com',
-        hashedPassword: 'demo-hash',
-        firstName: 'Bob',
-        lastName: 'B.',
-        address: '456 Banana Ave',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        username: 'carol',
-        email: 'carol@example.com',
-        hashedPassword: 'demo-hash',
-        firstName: 'Carol',
-        lastName: 'C.',
-        address: '789 Cherry Blvd',
+        username: 'Demo-lition',
+        email: 'demo@user.io',
+        hashedPassword: bcrypt.hashSync('password'),
+        firstName: 'Demo',
+        lastName: 'User',
+        address: null,
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -37,8 +19,9 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
+    const { Op } = Sequelize;
     await queryInterface.bulkDelete('Users', {
-      email: ['alice@example.com', 'bob@example.com', 'carol@example.com']
+      username: { [Op.in]: ['Demo-lition'] }
     }, {});
   }
 };

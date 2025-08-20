@@ -2,11 +2,10 @@
 
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.bulkInsert('Items', [
-      // ownerId 1 = alice
+    await queryInterface.bulkInsert('Products', [
       {
         ownerId: 1,
-        categoryId: 1, // Electronics
+        categoryId: 1,
         name: 'Wireless Headphones',
         description: 'Over-ear, noise-cancelling, 30h battery.',
         price: 79.99,
@@ -17,7 +16,7 @@ module.exports = {
       },
       {
         ownerId: 1,
-        categoryId: 3, // Books
+        categoryId: 3,
         name: 'JavaScript Patterns',
         description: 'A handy guide to JS patterns.',
         price: 19.50,
@@ -26,11 +25,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-
-      // ownerId 2 = bob
       {
         ownerId: 2,
-        categoryId: 2, // Home & Kitchen
+        categoryId: 2,
         name: 'Nonstick Frying Pan',
         description: 'Durable, oven-safe up to 400°F.',
         price: 24.99,
@@ -41,7 +38,7 @@ module.exports = {
       },
       {
         ownerId: 2,
-        categoryId: 4, // Fashion
+        categoryId: 4,
         name: 'Classic Hoodie',
         description: 'Soft cotton blend hoodie.',
         price: 34.00,
@@ -50,11 +47,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-
-      // ownerId 3 = carol
       {
         ownerId: 3,
-        categoryId: 1, // Electronics
+        categoryId: 1,
         name: 'Portable Charger 20k mAh',
         description: 'USB-C fast charge power bank.',
         price: 29.99,
@@ -65,7 +60,7 @@ module.exports = {
       },
       {
         ownerId: 3,
-        categoryId: 2, // Home & Kitchen
+        categoryId: 2,
         name: 'Stainless Steel Water Bottle',
         description: 'Vacuum insulated, 24oz.',
         price: 17.25,
@@ -78,7 +73,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('Items', {
+    await queryInterface.bulkDelete('Products', {
       name: [
         'Wireless Headphones',
         'JavaScript Patterns',
