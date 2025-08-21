@@ -3,9 +3,9 @@ const router = express.Router();
 const { Review, Product, User } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 const { check } = require('express-validator');
-const { handleValidationErrors } = require('../../utils/validation'); // <-- FIXED
+const { handleValidationErrors } = require('../../utils/validation'); 
 
-// If your DB columns are stars (1–5) and review (text):
+
 const validateReview = [
   check('stars')
     .isInt({ min: 1, max: 5 })
@@ -34,7 +34,7 @@ router.get('/product/:productId', async (req, res, next) => {
 router.post('/', requireAuth, validateReview, async (req, res, next) => {
   try {
     const { productId, stars, review } = req.body;
-    // Optional: ensure product exists
+
     const product = await Product.findByPk(productId);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 

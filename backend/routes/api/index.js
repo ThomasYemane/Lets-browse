@@ -5,7 +5,7 @@ const sessionRouter = require('./session');
 const usersRouter = require('./users');
 const productsRouter = require('./products');
 const categoriesRouter = require('./categories');
-const reviewsRouter = require('./reviews');
+const reviewsRouter = require('./reviews'); //my review is not mounted in API - issue is fixed now
 const wishlistRouter = require('./wishlist');
 const cartRouter = require('./cart');
 
