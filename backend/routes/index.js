@@ -1,24 +1,36 @@
-const router = require('express').Router();
+const express = require('express');
+const path = require('path');
+const router = express.Router();
 const apiRouter = require('./api');
 
-// Mount all API routes under /api
+// All API routes
 router.use('/api', apiRouter);
 
-// If items/categories are already inside ./routes/api, do NOT re-mount them here
-// (Uncomment only if they are truly *outside* ./routes/api)
-// router.use('/api/items', require('./items'));
-// router.use('/api/categories', require('./categories'));
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.resolve(__dirname, '../../frontend', 'dist');
 
-// Dev-only helpers
+  router.use(express.static(distPath));
+
+  router.get('/', (req, res) => {
+    res.cookie('XSRF-TOKEN', req.csrfToken());
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+
+  router.get(/^(?!\/?api).*/, (req, res) => {
+    res.cookie('XSRF-TOKEN', req.csrfToken());
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
+
 if (process.env.NODE_ENV !== 'production') {
-  // Restore CSRF cookie for the frontend dev server
-  router.get('/api/csrf/restore', (req, res) => {
-  const csrfToken = req.csrfToken();
-  res.cookie('XSRF-TOKEN', csrfToken);
-  res.status(200).json({ 'XSRF-Token': csrfToken }); // ✅ return token in JSON
-});
 
-  // Optional ping route
+  router.get('/api/csrf/restore', (req, res) => {
+    const csrfToken = req.csrfToken();
+    res.cookie('XSRF-TOKEN', csrfToken);
+    res.status(200).json({ 'XSRF-Token': csrfToken });
+  });
+
+  // Optional ping
   router.get('/hello/world', (req, res) => {
     res.cookie('XSRF-TOKEN', req.csrfToken());
     res.send('Hello World!');
