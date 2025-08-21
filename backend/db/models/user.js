@@ -1,22 +1,26 @@
 'use strict';
-const { Model, DataTypes } = require('sequelize');
+const { Model } = require('sequelize');
 
-module.exports = (sequelize) => {
+module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // items posted by this user
-      this.hasMany(models.Item, { foreignKey: 'ownerId', as: 'items' });
+
+      User.hasMany(models.Product, { as: 'products', foreignKey: 'ownerId' });
+      User.hasMany(models.Review,   { foreignKey: 'userId', onDelete: 'CASCADE', hooks: true });
+      User.hasMany(models.Wishlist, { foreignKey: 'userId', onDelete: 'CASCADE', hooks: true });
+      User.hasMany(models.Cart,     { foreignKey: 'userId', onDelete: 'CASCADE', hooks: true });
     }
   }
 
   User.init({
     username: DataTypes.STRING,
     email: DataTypes.STRING,
-    hashedPassword: DataTypes.STRING,
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
-    address: DataTypes.STRING
-  }, { sequelize, modelName: 'User' });
+    hashedPassword: DataTypes.STRING
+  }, {
+    sequelize,
+    modelName: 'User',
+    tableName: 'Users'
+  });
 
   return User;
 };

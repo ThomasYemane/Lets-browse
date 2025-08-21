@@ -38,6 +38,17 @@ app.use(restoreUser);
 // Routes
 app.use(routes);
 
+// Root ping (optional)
+app.get('/', (req, res) => {
+  res.json({ ok: true, name: 'Lets_browse API', env: process.env.NODE_ENV || 'development' });
+});
+
+// just for testing purpose...
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true });
+});
+
+
 // 404
 app.use((_req, _res, next) => {
   const err = new Error("The requested resource couldn't be found.");
