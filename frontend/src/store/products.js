@@ -27,17 +27,18 @@ export const removeProduct = (id) => ({
 });
 
 export const fetchProducts = () => async (dispatch) => {
-    const res = await fetch('api/products/');
+    const res = await fetch('/api/products/');
     if(res.ok){
         const data = await res.json();
         dispatch(viewProducts(data.products));
     }else{
-        console.error("Failed to fetch products");
+        const error = await res.json();
+        return error;
     }
 };
 
 export const createProduct = (data) => async (dispatch) => {
-    const res = await csrfFetch('api/products/', {
+    const res = await csrfFetch('/api/products/', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',
@@ -49,7 +50,8 @@ export const createProduct = (data) => async (dispatch) => {
         dispatch(addProduct(newProduct));
         return newProduct;
     }else{
-        console.error("Failed to create pin");
+         const error = await res.json();
+        return error;
     }
 };
 
@@ -68,7 +70,8 @@ export const updateProduct = (id, data) => async (dispatch) => {
         dispatch(editProduct(updatedProduct));
         return updatedProduct;
     } else {
-        console.error("Failed to update product");
+        const error = await res.json();
+        return error;
     }
 };
 
@@ -80,7 +83,8 @@ export const deleteProduct = (id) => async (dispatch) => {
     if (res.ok) {
         dispatch(removeProduct(id));
     } else {
-        console.error("Failed to delete product");
+         const error = await res.json();
+        return error;
     }
 };
 

@@ -5,6 +5,7 @@ import * as sessionActions from '../../store/session';
 import OpenModalButton from '../OpenModalButton/OpenModalButton';
 import LoginFormModal from '../LoginFormModal/LoginFormModal';
 import SignupFormModal from '../SignupFormModal/SignupFormModal';
+import { Link } from 'react-router-dom';
 
 
 function ProfileButton({ user }) {
@@ -70,8 +71,14 @@ function ProfileButton({ user }) {
                 onButtonClick={closeMenu}
               />
             </li>
+            
           </>
         )}
+         <li>
+          <Link to={'/products/new'}>
+              <span>Add Product</span>
+          </Link>
+      </li>
       </ul>
     </>
   );
