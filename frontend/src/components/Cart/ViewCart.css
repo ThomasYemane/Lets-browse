@@ -1,0 +1,25 @@
+.cartRow {
+      display: grid;
+      grid-template-columns: 60% 10% 10% 10% 10%;
+       column-gap: 30px;
+        padding: 10px;
+    }
+
+.cartCol > img {
+    object-fit: cover;
+    width: 50%;
+    height: 20vh;
+}
+
+.right{
+    float: right;
+}
+
+.left{
+      float: left;
+}
+
+.clear{
+    clear: both;
+}
+

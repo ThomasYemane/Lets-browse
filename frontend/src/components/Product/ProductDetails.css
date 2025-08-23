@@ -1,0 +1,27 @@
+.reviewCloseButton{
+    margin-right: 0; 
+    color: red;
+}
+
+.detailsContainer{
+   display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.detailsCol{
+     flex: 0 1 calc(50% - 20px);
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.cart{
+    padding: 20px;
+}
+
+.wishlist{
+    padding-top: 50px;
+}

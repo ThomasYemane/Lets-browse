@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
 import './Navigation.css';
@@ -16,6 +16,15 @@ function Navigation({ isLoaded }) {
           <ProfileButton user={sessionUser} />
         </li>
       )}
+      <li>
+        <Link to={'/cart'}>
+             <span>Go to Cart</span>
+        </Link>
+       </li>
+     
+       
+       
+     
     </ul>
   );
 }

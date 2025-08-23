@@ -25,11 +25,18 @@
 }
 
 .prodText {
-    color: #e60023;
+    text-align: left;
+    padding: 10px;
 }
 
-.prodName {
-  float: left;
+.prodText >p{
+    color:rgb(57, 54, 54);
+}
+
+.prodName{
+    color: rgb(80, 91, 89);
+    font-weight: bold;
+    font-size: larger;
 }
 
 .h1{
@@ -43,4 +50,76 @@
   border-radius: 8px;
   cursor: pointer;
   display: block;      
+}
+
+.updateButton {
+  float: left;
+  color: green;
+}
+
+.deleteButton {
+  float: right;
+  color: red;
+}
+
+.dialogOverlay {
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialogContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 400px; 
+  width: 90%; 
+  text-align: center;
+}
+
+.dialogContent>p{
+    text-align: left;
+    padding: 20px;
+}
+
+.yesButton{
+    float: right;
+     color: red;
+}
+
+.noButton{
+      float: left;
+      color: green;
+}
+
+.category {
+  list-style-type: none;
+  margin: 40px;
+  padding: 0;
+  overflow: hidden;
+  background-color: #9384db;
+}
+
+.category>li {
+  float: left;
+}
+
+.category>li span {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+
+.category>li span:hover {
+  background-color: #111;
 }

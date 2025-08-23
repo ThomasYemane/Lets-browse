@@ -6,6 +6,9 @@ import * as sessionActions from './store/session'
 import ViewProducts from './components/Product/ProductList'
 import ProductDetails from './components/Product/ProductDetails'
 import CreateProductForm from './components/Product/CreateProductForm'
+import UpdateProductForm from './components/Product/UpdateProductForm'
+import ViewWishlist from './components/Wishlist/ViewWishlist'
+import ViewCart from './components/Cart/ViewCart'
 
 function Layout() {
   const dispatch = useDispatch()
@@ -27,10 +30,15 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { path: '/', element: <h1>Welcome!</h1> },
+      { path: '/',  element: <ViewProducts /> },
       {path: 'products',  element: <ViewProducts />},
       {path: 'products/:id',  element: <ProductDetails />},
       {path: "products/new", element: <CreateProductForm />},
+      {path: "products/:id/edit", element: <UpdateProductForm />},
+      {path: "wishlist", element: <ViewWishlist />},
+      {path: "cart", element: <ViewCart/>},
+      
+
     ]
   }
 ])
